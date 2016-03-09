@@ -1,0 +1,107 @@
+#!/bin/bash
+echo
+# use extended globbing features
+shopt -s extglob
+
+# import our build functions
+source _build_openssl.sh
+source _build_librtmp.sh
+source _patch_ffmpeg.sh
+
+#-- error function
+function die {
+  code=-1
+  err="Unknown error!"
+  test "$1" && err=$1
+  cd ${top_root}
+  echo "$err"
+  echo "Check the build log: ${build_log}"
+  exit -1
+}
+
+
+#-- try to intelligently determine where the Android NDK is installed
+function find_ndk {
+  ndk_name="android-ndk-r10"
+  top_level_paths_to_search="/Users /Applications /usr"
+  found_ndk=""
+  for d in $top_level_paths_to_search; do
+    test -d "$d" || continue
+    found_ndk=$(find $d -name $ndk_name -print)
+    test "$found_ndk" && break
+  done
+  echo "$found_ndk"
+}
+
+
+#-- set up environment variables, folder structure, and log files
+function initialize {
+  echo "Setting up build environment ..."
+  
+  # environment variables
+  top_root=$PWD
+  src_root=${top_root}/src
+  build_root=${top_root}/build
+  patch_root=${top_root}/patches
+  dist_root=${top_root}/build/dist
+  dist_bin_root=${dist_root}/bin
+  dist_include_root=${dist_root}/include
+  dist_lib_root=${dist_root}/lib
+  build_log=${top_root}/build/build.log
+  config_file=${top_root}/.build-config.sh
+
+  echo "cleaning old build files..."
+  rm -rf ${build_root}
+  rm -rf ${src_root}
+
+  # create our folder structure
+  cd ${top_root}
+  test -d ${src_root} || mkdir -p ${src_root}
+  test -d ${build_root} || mkdir -p ${build_root}
+  test -d ${dist_root} || mkdir -p ${dist_root}
+  test -d ${dist_bin_root} || mkdir -p ${dist_bin_root}
+  test -d ${dist_include_root} || mkdir -p ${dist_include_root}
+  test -d ${dist_lib_root} || mkdir -p ${dist_lib_root}
+  touch ${build_log}
+
+  rm -f ${build_log}
+
+  # create our configuration file if it doesn't yet exist
+  if [ ! -f "${config_file}" ]; then
+    # determine OS and architecture
+    OS_ARCH=$(uname -sm | tr 'A-Z' 'a-z' | sed "s/\ /\-/g")
+
+    # find / ask for the NDK
+    echo "Looking for the NDK ..."
+    NDK=$(find_ndk)
+    echo -n "Enter Full Path to Android NDK [$NDK]: "
+    read typed_ndk_root
+    test "$typed_ndk_root" && NDK="$typed_ndk_root"
+
+    # save our configuration
+    echo "Saving configuration into ${config_file} ..."
+    echo "OS_ARCH=$OS_ARCH" > ${config_file}
+    echo "NDK=$NDK" >> ${config_file}
+    echo "SYSROOT=${NDK}/platforms/android-19/arch-arm" >> ${config_file}
+    echo "TOOLCHAIN=${NDK}/toolchains/arm-linux-androideabi-4.8/prebuilt/${OS_ARCH}" >> ${config_file}
+  fi
+
+  # show the user our configuration, then import it
+  cat ${config_file}
+  source ${config_file}
+  # export NDK location to path
+
+  export NDK=$NDK
+}
+
+
+#-- main
+set -e  # fail hard on any error
+
+initialize
+build_openssl
+build_librtmp
+patch_ffmpeg
+
+
+echo "Look in ${dist_root} for libraries and executables."
