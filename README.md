@@ -1,7 +1,6 @@
 # ffmpeg with rtmp for QtAv. (Android only)
 
-This repository contains script(s) to build ffmpeg for QtAV with RTMP (and OpenSSL) support. Note that the build script only builds for
-Android target and for any other platform you need to modify it.
+This repository contains script(s) to build ffmpeg for QtAV with RTMP (and OpenSSL) support. Note that the build script only builds for Android targets and for any other platform you need to modify it.
 
 ## Instructions
 
