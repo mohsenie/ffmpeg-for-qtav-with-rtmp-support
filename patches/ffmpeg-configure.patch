@@ -1,6 +1,6 @@
---- configure-orig	2016-03-05 18:20:04.000000000 +0000
-+++ configure	2016-03-06 00:17:57.640910174 +0000
-@@ -3076,10 +3076,10 @@
+--- configure-original	2016-03-09 18:20:04.000000000 +0000
++++ configure	2016-03-12 17:39:34.899371000 +0000
+@@ -3104,10 +3104,10 @@
  SLIBSUF=".so"
  SLIBNAME='$(SLIBPREF)$(FULLNAME)$(SLIBSUF)'
  SLIBNAME_WITH_VERSION='$(SLIBNAME).$(LIBVERSION)'
@@ -14,7 +14,7 @@
  
  asflags_filter=echo
  cflags_filter=echo
-@@ -5600,7 +5600,7 @@
+@@ -5532,7 +5532,7 @@
                                 die "ERROR: libopenjpeg not found"; }
  enabled libopus           && require_pkg_config opus opus_multistream.h opus_multistream_decoder_create
  enabled libpulse          && require_pkg_config libpulse pulse/pulseaudio.h pa_context_new
@@ -23,3 +23,18 @@
  enabled librubberband     && require_pkg_config "rubberband >= 1.8.1" rubberband/rubberband-c.h rubberband_new
  enabled libschroedinger   && require_pkg_config schroedinger-1.0 schroedinger/schro.h schro_init
  enabled libshine          && require_pkg_config shine shine/layer3.h shine_encode_buffer
+@@ -5634,12 +5634,8 @@
+                                check_lib2 ES2/gl.h glGetError "-isysroot=${sysroot} -Wl,-framework,OpenGLES" ||
+                                die "ERROR: opengl not found."
+                              }
+-enabled openssl           && { use_pkg_config openssl openssl/ssl.h SSL_library_init ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl -lcrypto ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl32 -leay32 ||
+-                               check_lib openssl/ssl.h SSL_library_init -lssl -lcrypto -lws2_32 -lgdi32 ||
+-                               die "ERROR: openssl not found"; }
+-enabled qtkit_indev      && { check_header_objcc QTKit/QTKit.h || disable qtkit_indev; }
++enabled openssl           && require openssl openssl/ssl.h SSL_library_init -L$LIB_OPENSSL_PATH/libs/armeabi -lssl -lcrypto
++enabled qtkit_indev       && { check_header_objcc QTKit/QTKit.h || disable qtkit_indev; }
+ 
+ # libdc1394 check
+ if enabled libdc1394; then
