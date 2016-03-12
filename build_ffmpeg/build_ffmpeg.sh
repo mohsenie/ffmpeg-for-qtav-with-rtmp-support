@@ -166,7 +166,7 @@ setup_android_env() {
   export PATH=$ANDROID_TOOLCHAIN_DIR/bin:$PATH
   rm -rf $ANDROID_SYSROOT/usr/include/{libsw*,libav*}
   rm -rf $ANDROID_SYSROOT/usr/lib/{libsw*,libav*}
-  MISC_OPT="--enable-protocol=http --enable-protocol=rtmp --enable-decoder=h264 --enable-librtmp --enable-network"
+  MISC_OPT="--enable-protocol=http --enable-protocol=rtmp --enable-decoder=h264 --enable-librtmp --enable-network --enable-openssl"
   PLATFORM_OPT="$ANDROIDOPT"
   INSTALL_DIR=sdk-android-$ANDROID_ARCH
   # more flags see: https://github.com/yixia/FFmpeg-Vitamio/blob/vitamio/build_android.sh
