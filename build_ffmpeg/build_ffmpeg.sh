@@ -129,8 +129,11 @@ setup_android_env() {
 #https://wiki.debian.org/ArmHardFloatPort/VfpComparison
     
     LIB_RTMP="${LIB_RTMP}/android/arm"
-    #exporting path for ffmpeg config
+    #exporting librtmp path for ffmpeg config
     export LIB_RTMP_PATH=${LIB_RTMP} 
+    
+    #exporting libssl path for ffmpeg config 
+    export LIB_OPENSSL_PATH=${LIB_OPEN_SSL}
 
     ANDROID_TOOLCHAIN_PREFIX="arm-linux-androideabi"
     CROSS_PREFIX=${ANDROID_TOOLCHAIN_PREFIX}-
